@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include('../partials/header') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .discussion {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .discussion h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #007bff;
+    }
+    .discussion p {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    .discussion small {
+      color: #666;
+    }
+    .create-post {
+      margin-top: 20px;
+    }
+    .like-button, .comment-button, .delete-button {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .like-button {
+      color: #666;
+    }
+    .like-button.liked {
+      color: red;
+    }
+    .comment-button {
+      color: #0275d8;
+    }
+    .delete-button {
+      color: #d9534f;
+    }
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .favorite-posts-button {
+      color: white;
+      background-color: #007bff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container mt-5">
+    <div class="header-container">
+      <h1 class="mb-4">Favorites</h1>
+     <% if(user) {%>
+      <a href="/discussion" class="favorite-posts-button">Back to Discussion</a>
+      <%} %> 
+    </div>
+    <div class="discussions">
+      <% if (discussions.length > 0) { %>
+        <% discussions.forEach(discussion => { %>
+          <div class="discussion shadow-sm p-3 mb-5 bg-white rounded">
+            <h2 class="text-primary"><%= discussion.title %></h2>
+            <p class="text-muted"><%= discussion.content %></p>
+            <small class="text-secondary">Posted by User: <%= discussion.author %> on <%= new Date(discussion.createdAt).toLocaleString() %></small>
+            <div class="like-container">
+              <i class="fas fa-comment comment-button" onclick="openComments('<%= discussion.id %>')"></i>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="text-center text-warning">No posts in favorites.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    function openComments(postId) {
+      window.location.href = `/discussion/comments/${postId}`;
+    }
+  </script>
+</body>
+</html>

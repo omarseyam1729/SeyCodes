@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/header') %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .CodeMirror {
+            height: auto;
+            min-height: 400px;
+            font-size: 14px;
+            text-align: left;
+            white-space: pre-wrap;
+            overflow-x: hidden;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .form-control, .form-select {
+            font-size: 14px;
+            padding: 10px;
+        }
+        .btn {
+            font-size: 14px;
+            padding: 10px 20px;
+        }
+        #output {
+            background-color: #282a36;
+            color: #f8f8f2;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h3 {
+            font-weight: 500;
+        }
+        label {
+            font-weight: 500;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-md-6">
+                <h3>Code Editor</h3>
+                <textarea id="code" class="form-control" rows="20" placeholder="Write your code here..."></textarea>
+                <div class="mt-3">
+                    <label for="language">Select Language:</label>
+                    <select id="language" class="form-select">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="cpp">C++</option>
+                    </select>
+                </div>
+                <div class="mt-3">
+                    <label for="fontSize">Font Size:</label>
+                    <select id="fontSize" class="form-select">
+                        <option value="12px">12px</option>
+                        <option value="14px" selected>14px</option>
+                        <option value="16px">16px</option>
+                        <option value="18px">18px</option>
+                        <option value="20px">20px</option>
+                    </select>
+                </div>
+                <button id="run" class="btn btn-primary mt-3">Run</button>
+            </div>
+            <div class="col-md-6">
+                <h3>Output</h3>
+                <pre id="output" class="border p-3" style="height: 400px; overflow-y: auto;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+                lineNumbers: true,
+                mode: 'javascript',
+                theme: 'dracula',
+                lineWrapping: true, // Enable line wrapping
+                viewportMargin: Infinity,
+                smartIndent: true,
+                autofocus:true,
+                autoCloseBrackets: true
+
+            });
+
+            document.getElementById('language').addEventListener('change', (event) => {
+                const language = event.target.value;
+                let mode = 'javascript';
+                if (language === 'python') {
+                    mode = 'python';
+                } else if (language === 'cpp') {
+                    mode = 'text/x-c++src';
+                }
+                editor.setOption('mode', mode);
+            });
+
+            document.getElementById('fontSize').addEventListener('change', (event) => {
+                const fontSize = event.target.value;
+                editor.getWrapperElement().style.fontSize = fontSize;
+                editor.refresh();
+            });
+
+            document.getElementById('run').addEventListener('click', () => {
+                const code = editor.getValue();
+                const language = document.getElementById('language').value;
+                
+                fetch('/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code, language })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('output').innerText = data.output;
+                })
+                .catch(error => {
+                    document.getElementById('output').innerText = 'Error: ' + error;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

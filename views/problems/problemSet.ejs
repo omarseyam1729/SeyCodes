@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/header') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="container mt-5">
+    <h1 class="mb-4">Problem List</h1>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Problem ID</th>
+          <th>Title</th>
+          <th>Difficulty</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% problems.forEach(problem => { %>
+          <tr>
+            <td><%= problem.problemId %></td>
+            <td>
+              <a href="/problems/<%= problem.problemId %>"><%= problem.title %></a>
+            </td>
+            <td><%= problem.difficulty %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <%- include('../partials/footer') %>
+</body>
+</html>

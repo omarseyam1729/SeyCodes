@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include('../partials/header') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .discussion {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .discussion h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #007bff;
+    }
+    .discussion p {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    .discussion small {
+      color: #666;
+    }
+    .comment {
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .comment .comment-content {
+      flex-grow: 1;
+    }
+    .comment .comment-buttons {
+      display: flex;
+      align-items: center;
+    }
+    .like-button, .comment-button, .delete-button {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .like-button {
+      color: #666;
+    }
+    .like-button.liked {
+      color: red;
+    }
+    .comment-button {
+      color: #0275d8;
+    }
+    .delete-button {
+      color: #d9534f;
+    }
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .favorite-posts-button {
+      color: white;
+      background-color: #007bff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .back-button {
+      color: white;
+      background-color: #6c757d;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0,0,0);
+      background-color: rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #fefefe;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+      border-radius: 10px;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    .modal-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .modal-buttons .yes-button {
+      background-color: #d9534f;
+      color: white;
+    }
+    .modal-buttons .no-button {
+      background-color: #5bc0de;
+      color: white;
+    }
+    .blur {
+      filter: blur(5px);
+    }
+    .noblur {
+      filter: blur(0px);
+    }
+    .like-container {
+      display: flex;
+      align-items: center;
+    }
+    .like-button {
+      margin-right: 5px;
+    }
+    .like-count {
+      margin-left: 5px;
+      margin-right: 10px;
+    }
+    .create-comment {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container mt-5" id="allcontainer">
+    <div class="header-container">
+      <a href="/discussion" class="back-button">Back to Discussions</a>
+    </div>
+    <div class="discussion shadow-sm p-3 mb-5 bg-white rounded">
+      <h2 class="text-primary"><%= discussion.title %></h2>
+      <p class="text-muted"><%= discussion.content %></p>
+      <small class="text-secondary">Posted by User: <%= discussion.author.username %> on <%= new Date(discussion.createdAt).toLocaleString() %></small>
+    </div>
+    
+    <div class="comments">
+      <% if (comments.length > 0) { %>
+        <% comments.forEach(comment => { %>
+          <div class="comment">
+            <div class="comment-content">
+              <p><%= comment.content %></p>
+              <small class="text-secondary">Comment by <%= comment.user.username %> on <%= new Date(comment.createdAt).toLocaleString() %></small>
+            </div>
+            <div class="comment-buttons">
+              <% if (user && user.username === comment.user.username) { %>
+                <i class="fas fa-trash delete-button" onclick="confirmDeleteComment('<%= comment.id %>')"></i>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="text-center text-warning">No comments available.</p>
+      <% } %>
+    </div>
+
+    <% if (user) { %>
+      <div class="create-comment">
+        <form action="/discussion/comments/<%= discussion.id %>" method="POST">
+          <div class="form-group">
+            <textarea name="content" class="form-control" rows="3" placeholder="Add a comment..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary mt-2">Submit</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+
+  <div id="deleteModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <p>Are you sure you want to delete this comment?</p>
+      <div class="modal-buttons">
+        <button class="yes-button" onclick="deleteItem()">Yes</button>
+        <button class="no-button" onclick="closeModal()">No</button>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    let itemIdToDelete = null;
+    let isComment = false;
+    function confirmDelete(postId) {
+      document.getElementById('deleteModal').style.display = 'flex';
+      document.getElementById("allcontainer").classList.add("blur");
+      itemIdToDelete = postId;
+      isComment = false;
+    }
+
+    function confirmDeleteComment(commentId) {
+      document.getElementById('deleteModal').style.display = 'flex';
+      document.getElementById("allcontainer").classList.add("blur");
+      itemIdToDelete = commentId;
+      isComment = true;
+    }
+
+    function closeModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      document.getElementById("allcontainer").classList.remove("blur");
+      itemIdToDelete = null;
+      isComment = false;
+    }
+
+    function deleteItem() {
+      if (itemIdToDelete) {
+        const url = `/discussion/comment/delete/${itemIdToDelete}`;
+        fetch(url, {
+          method: 'DELETE',
+        })
+        .then(response => {
+          location.reload();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to delete item.');
+        })
+        .finally(() => {
+          closeModal();
+        });
+      }
+    }
+  </script>
+</body>
+</html>

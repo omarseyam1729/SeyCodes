@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/header') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+  <div class="container mt-5">
+    <div class="card">
+      <div class="card-header">
+        User Profile
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Username: <%= user.username %></h5>
+        <p class="card-text"><strong>Email:</strong> <%= user.email %></p>
+        <p class="card-text"><strong>Account Created On:</strong> <%= new Date(user.createdAt).toLocaleDateString() %></p>
+      </div>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

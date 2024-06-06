@@ -6,5 +6,5 @@ const ProblemController=require('../controllers/ProblemController')
 router.get('/editor',auth.authenticate,ProblemController.editor);
 router.get('/problemset',auth.authenticate,ProblemController.problemSet);
 router.post('/run', auth.authenticate,ProblemController.runCode);
-
+router.get('/problems/:problemId',auth.authenticate,ProblemController.getProblem);
   module.exports=router;

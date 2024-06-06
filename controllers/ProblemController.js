@@ -5,10 +5,13 @@ const fs = require('fs');
 const path = require('path');
 
 const editor = (req, res) => {
+    console.log(req.user);
+    if(!req.user)res.render('auth/login',{user:req.user});
     res.render('editor/editor', { user: req.user });
 };
 
 const runCode = (req, res) => {
+    if(!req.user)res.render('auth/login');
     const { code, language } = req.body;
     let command;
     let tempFile;
@@ -65,5 +68,12 @@ const problemSet = async (req, res) => {
       res.status(500).send('Server Error');
     }
   };
-
-module.exports = { runCode, editor,problemSet };
+const getProblem = async (req,res) => {
+    
+    if(!req.user)res.render('auth/login',{user:req.user});
+    const problemId=req.params.problemId;
+    const problem=await Problem.findByPk(problemId);
+    console.log(problem);
+    res.json(problem);
+}
+module.exports = { runCode, editor,problemSet,getProblem };

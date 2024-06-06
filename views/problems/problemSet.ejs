@@ -2,17 +2,28 @@
 <html lang="en">
 <head>
   <%- include('../partials/header') %>
+  <style>
+    .difficulty-easy {
+      color: green;
+    }
+    .difficulty-medium {
+      color: orange;
+    }
+    .difficulty-hard {
+      color: red;
+    }
+  </style>
 </head>
 <body>
   <%- include('../partials/navbar') %>
   <div class="container mt-5">
     <h1 class="mb-4">Problem List</h1>
-    <table class="table table-bordered">
-      <thead>
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="thead-dark">
         <tr>
-          <th>Problem ID</th>
-          <th>Title</th>
-          <th>Difficulty</th>
+          <th scope="col">Problem ID</th>
+          <th scope="col">Title</th>
+          <th scope="col">Difficulty</th>
         </tr>
       </thead>
       <tbody>
@@ -22,7 +33,9 @@
             <td>
               <a href="/problems/<%= problem.problemId %>"><%= problem.title %></a>
             </td>
-            <td><%= problem.difficulty %></td>
+            <td class="<%= problem.difficulty === 'Easy' ? 'difficulty-easy' : problem.difficulty === 'Medium' ? 'difficulty-medium' : 'difficulty-hard' %>">
+              <%= problem.difficulty %>
+            </td>
           </tr>
         <% }) %>
       </tbody>

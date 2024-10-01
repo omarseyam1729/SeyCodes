@@ -8,7 +8,7 @@ const pageRoutes = require('./routes/pageRoutes');
 const authRoutes = require('./routes/authRoutes');
 const problemRoutes = require('./routes/problemRoutes');
 const discussionRoutes=require('./routes/discussionRoutes');
-const PORT=3000;
+const PORT=443;
 const sequelize = require('./config/connection');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

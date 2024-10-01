@@ -3,7 +3,7 @@ module.exports = {
     apps: [
       {
         name: "SeyCodes-App",
-        script: "app.js",
+        script: "server.js",
         instances: "max",
         exec_mode: "cluster",
         env: {

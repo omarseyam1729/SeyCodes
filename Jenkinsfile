@@ -10,7 +10,6 @@ pipeline {
         REPO_URL = 'https://github.com/omarseyam1729/SeyCodes.git' 
         BRANCH = 'main' 
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -21,6 +20,11 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'npm install'
+            }
+        }
+        stage('Test'){
+            steps{
+                sh 'npm test'
             }
         }
         stage('Code Quality') {

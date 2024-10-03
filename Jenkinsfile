@@ -23,11 +23,11 @@ pipeline {
                 sh 'npm install'
             }
         }
-        // stage('Test') {
-        //     steps{
-        //         sh 'npm test'
-        //     }
-        // }
+        stage('Test') {
+            steps{
+                sh 'npm run lint'
+            }
+        }
 
         stage('Deploy to EC2') {
             steps {
@@ -54,7 +54,6 @@ ENDSSH
             }
         }
     }
-
     post {
         success {
             echo 'Deployment succeeded!'

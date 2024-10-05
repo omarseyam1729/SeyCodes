@@ -61,6 +61,8 @@ ENDSSH
     post {
         success {
             echo 'Deployment succeeded!'
+            echo 'NGINX was used on port 80 as a reverse proxy'
+            echo 'The app is now running on the specified port successfully'
         }
         failure {
             echo 'Deployment failed.'
